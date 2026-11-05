@@ -1,0 +1,42 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Build
+        shell: pwsh
+        run: ./build.ps1
+
+      - name: Checksum
+        shell: pwsh
+        run: |
+          Get-FileHash CanYourPCRunIt-Scanner.exe -Algorithm SHA256 |
+            ForEach-Object { "$($_.Hash.ToLower())  CanYourPCRunIt-Scanner.exe" } |
+            Out-File checksums.txt -Encoding ascii
+
+      - uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: CanYourPCRunIt-Scanner.exe
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            CanYourPCRunIt-Scanner.exe
+            checksums.txt
+          generate_release_notes: true
