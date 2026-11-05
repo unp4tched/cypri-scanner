@@ -1,0 +1,14 @@
+# Build output
+/dist/
+*.exe
+*.exe.sha256
+
+# Local scan dumps contain this machine's hardware inventory
+scan.json
+*-scan.json
+
+# Editor / OS noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
