@@ -26,17 +26,16 @@ jobs:
       - name: Checksum
         shell: pwsh
         run: |
-          Get-FileHash CanYourPCRunIt-Scanner.exe -Algorithm SHA256 |
-            ForEach-Object { "$($_.Hash.ToLower())  CanYourPCRunIt-Scanner.exe" } |
-            Out-File checksums.txt -Encoding ascii
+          $hash = (Get-FileHash dist/CanYourPCRunIt-Scanner.exe -Algorithm SHA256).Hash.ToLower()
+          "$hash  CanYourPCRunIt-Scanner.exe" | Out-File dist/checksums.txt -Encoding ascii
 
       - uses: actions/attest-build-provenance@v2
         with:
-          subject-path: CanYourPCRunIt-Scanner.exe
+          subject-path: dist/CanYourPCRunIt-Scanner.exe
 
       - uses: softprops/action-gh-release@v2
         with:
           files: |
-            CanYourPCRunIt-Scanner.exe
-            checksums.txt
+            dist/CanYourPCRunIt-Scanner.exe
+            dist/checksums.txt
           generate_release_notes: true
